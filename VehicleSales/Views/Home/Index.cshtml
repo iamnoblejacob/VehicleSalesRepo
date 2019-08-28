@@ -1,0 +1,84 @@
+﻿@model VehicleSales.Models.VehicleSalesModel
+@using VehicleSales.Helpers
+@{
+    ViewBag.Title = "Upload Vehicle Sale";
+}
+
+
+<h3>Upload vehicle sales csv file</h3>
+
+@using (Html.BeginForm("Index", "Home", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @Html.ValidationSummary()
+        </div>
+    }
+
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="dataFile" name="FileUpload" accept=".csv" onchange="form.submit()">
+        <label class="custom-file-label" for="dataFile">Choose vehicle sales .csv file</label>
+    </div>
+    @*<input type="submit" value="Upload" class="btn btn-success" />*@
+
+    if (Model != null && Model.SalesList != null && Model.SalesList.Count > 0)
+    {
+        <div class="row">
+            <br />
+        </div>
+        <div class="row container">
+            <strong>Most sold Vehicle : </strong>&nbsp;&nbsp; @Model.MostSoldVehicle
+        </div>
+        <br />
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>DealNumber</th>
+                    <th>CustomerName</th>
+                    <th>DealershipName</th>
+                    <th>Vehicle</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SalesList)
+                {
+                    <tr>
+                        <td>@item.DealNumber</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.DealershipName</td>
+                        <td>@item.Vehicle</td>
+                        <td>@Html.hlpr_CurrencyCAD(item.Price)</td>
+                        <td>@Html.hlpr_DateToYYYYMMDD(item.Date)</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        $('.custom-file-input').on('change', function () {
+            let fileName = $(this).val().split('\\').pop();
+            let label = $(this).siblings('.custom-file-label');
+
+            if (label.data('default-title') === undefined) {
+                label.data('default-title', label.html());
+            }
+
+            if (fileName === '') {
+                label.removeClass("selected").html(label.data('default-title'));
+            } else {
+                label.addClass("selected").html(fileName);
+            }
+        });
+    });
+
+</script>
